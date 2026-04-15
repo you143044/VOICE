@@ -9,41 +9,34 @@
 - 音频数据集格式统一（16kHz 单声道）
 - 特征提取（13维音频特征）
 - LSTM 模型训练和评估
-- 图形化界面应用
 
 ## 项目结构
 
 ```
-VOICE/
-├── app.py                # 主应用程序（图形界面）
-├── model.py              # 模型定义（包含LSTM模型）
-├── train.py              # 原始训练脚本
-├── train_lstm.py         # LSTM模型训练脚本
-├── preprocess_final.py   # 音频预处理脚本
-├── extract_features_light.py  # 轻量版特征提取脚本
-├── dataset/              # 原始数据集
-│   └── data_thchs30/     # THCHS-30 数据集
-├── dataset_processed/    # 处理后的数据集
-├── features/             # 提取的特征
-└── models/               # 训练好的模型
+/
+├── config.py                # 配置文件
+├── feature_extractor.py     # 特征提取和预处理模块
+├── model.py                 # LSTM模型定义
+├── train.py                 # 训练脚本
+├── main.py                  # 主脚本（整合预处理和特征提取）
+├── dataset/                 # 原始数据集
+├── dataset_processed/       # 处理后的数据集
+├── features/                # 提取的特征
+└── models/                  # 训练好的模型
 ```
 
 ## 快速开始
 
-### 1. 预处理音频数据集
+### 1. 准备数据集
 
-将音频统一为 16kHz 单声道格式：
+在 `dataset` 目录中放置音频文件。
 
-```bash
-python preprocess_final.py
-```
+### 2. 预处理和特征提取
 
-### 2. 提取特征
-
-提取音频特征用于模型训练：
+运行主脚本进行音频预处理和特征提取：
 
 ```bash
-python extract_features_light.py
+python main.py
 ```
 
 ### 3. 训练 LSTM 模型
@@ -51,15 +44,7 @@ python extract_features_light.py
 使用提取的特征训练 LSTM 模型：
 
 ```bash
-python train_lstm.py
-```
-
-### 4. 运行应用程序
-
-启动图形化界面：
-
-```bash
-python app.py
+python train.py
 ```
 
 ## 技术说明
@@ -77,20 +62,7 @@ python app.py
 - **输入维度**：13 维特征
 - **输出**：二分类（男性/女性）
 
-### 性能指标
-
-- 验证准确率：58.81%
-- 测试准确率：58.78%
-- F1 分数：0.7404
-
-## 数据说明
-
-- **数据集**：THCHS-30（清华大学语音语料库）
-- **样本数量**：26,776 个音频文件
-- **性别分布**：男性 11,034 个，女性 15,742 个
-- **音频长度**：3秒固定长度
-
-## 依赖项
+### 依赖项
 
 - Python 3.8+
 - PyTorch
@@ -98,8 +70,6 @@ python app.py
 - SciPy
 - scikit-learn
 - tqdm
-- PyQt5（图形界面）
-- pyaudio（录音功能）
 
 ## 改进方向
 

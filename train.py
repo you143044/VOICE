@@ -1,11 +1,8 @@
 """
-train.py - 训练模块
-===================
+train.py - 整合版训练脚本
+=====================
 
-包含：
-- 数据加载和预处理
-- 训练和验证
-- 模型保存
+使用LSTM模型进行训练和评估
 """
 
 import os
@@ -14,161 +11,38 @@ import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from scipy.io import wavfile
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, classification_report
 from tqdm import tqdm
 
-from model import Config, GenderDetectorModel, AdvancedFeatureExtractor
+from config import Config
+from model import LSTMGenderDetector
 
-class AudioDataset(torch.utils.data.Dataset):
-    """音频数据集类 - 使用手工特征"""
+
+class FeatureDataset(torch.utils.data.Dataset):
+    """预提取特征数据集"""
     
-    def __init__(self, audio_paths, genders, config):
-        self.audio_paths = audio_paths
-        self.genders = genders
-        self.config = config
-        self.feature_extractor = AdvancedFeatureExtractor(
-            sample_rate=config.SAMPLE_RATE,
-            n_mfcc=config.MFCC_DIM
-        )
+    def __init__(self, features, labels):
+        self.features = features
+        self.labels = labels
     
     def __len__(self):
-        return len(self.audio_paths)
+        return len(self.features)
     
     def __getitem__(self, idx):
-        audio_path = self.audio_paths[idx]
-        gender = self.genders[idx]
-        
-        if idx % 10 == 0:
-            print(f"Processing file {idx}/{len(self.audio_paths)}: {audio_path}")
-        
-        try:
-            audio = self._load_audio(audio_path)
-            if idx % 10 == 0:
-                print(f"Audio loaded successfully, length: {len(audio)}")
-            
-            features = self.feature_extractor.extract_all_features(audio)
-            if idx % 10 == 0:
-                print(f"Features extracted successfully, shape: {features.shape}")
-            
-            features_tensor = torch.tensor(features, dtype=torch.float32)
-            gender_label = torch.tensor(self.config.GENDER_MAPPING[gender], dtype=torch.long)
-            
-            return features_tensor, gender_label
-        except Exception as e:
-            print(f"Error processing file {audio_path}: {e}")
-            import traceback
-            traceback.print_exc()
-            # 返回零特征和默认标签
-            return torch.zeros(self.config.TOTAL_FEATURE_DIM), torch.tensor(0, dtype=torch.long)
-    
-    def _load_audio(self, audio_path):
-        try:
-            # 使用scipy.io.wavfile加载WAV文件
-            sr, audio = wavfile.read(audio_path)
-            
-            # 转换为float32
-            if audio.dtype == np.int16:
-                audio = audio.astype(np.float32) / 32768.0
-            elif audio.dtype == np.int32:
-                audio = audio.astype(np.float32) / 2147483648.0
-            
-            # 归一化
-            audio = audio / (np.max(np.abs(audio)) + 1e-8)
-            
-            # 确保音频长度
-            if len(audio) > self.config.FIXED_LENGTH:
-                audio = audio[:self.config.FIXED_LENGTH]
-            elif len(audio) < self.config.FIXED_LENGTH:
-                pad_left = (self.config.FIXED_LENGTH - len(audio)) // 2
-                pad_right = self.config.FIXED_LENGTH - len(audio) - pad_left
-                audio = np.pad(audio, (pad_left, pad_right), mode='constant')
-            
-            return audio
-        except Exception as e:
-            print(f"Error processing {audio_path}: {e}")
-            return np.zeros(self.config.FIXED_LENGTH)
+        feature = torch.tensor(self.features[idx], dtype=torch.float32)
+        label = torch.tensor(self.labels[idx], dtype=torch.long)
+        return feature, label
 
-class DataManager:
-    """数据管理类"""
-    
-    def __init__(self, config):
-        self.config = config
-    
-    def load_dataset(self):
-        audio_paths = []
-        genders = []
-        
-        males_path = os.path.join(self.config.DATASET_PATH, 'males')
-        females_path = os.path.join(self.config.DATASET_PATH, 'females')
-        
-        if os.path.exists(males_path):
-            for filename in os.listdir(males_path):
-                if filename.endswith('.wav'):
-                    audio_paths.append(os.path.join(males_path, filename))
-                    genders.append('male')
-        
-        if os.path.exists(females_path):
-            for filename in os.listdir(females_path):
-                if filename.endswith('.wav'):
-                    audio_paths.append(os.path.join(females_path, filename))
-                    genders.append('female')
-        
-        print(f"Loaded {len(audio_paths)} audio files")
-        print(f"  Male: {len([g for g in genders if g == 'male'])}")
-        print(f"  Female: {len([g for g in genders if g == 'female'])}")
-        
-        return audio_paths, genders
-    
-    def create_datasets(self, audio_paths, genders):
-        X = np.array(audio_paths)
-        y = np.array(genders)
-        
-        X_train, X_temp, y_train, y_temp = train_test_split(
-            X, y, test_size=1 - self.config.TRAIN_SPLIT, random_state=42, stratify=y
-        )
-        
-        val_size = self.config.VALIDATION_SPLIT / (self.config.VALIDATION_SPLIT + self.config.TEST_SPLIT)
-        X_val, X_test, y_val, y_test = train_test_split(
-            X_temp, y_temp, test_size=val_size, random_state=42, stratify=y_temp
-        )
-        
-        datasets = {
-            'train': AudioDataset(X_train, y_train, self.config),
-            'val': AudioDataset(X_val, y_val, self.config),
-            'test': AudioDataset(X_test, y_test, self.config)
-        }
-        
-        print(f"\nDatasets created:")
-        print(f"  Train: {len(datasets['train'])}")
-        print(f"  Val: {len(datasets['val'])}")
-        print(f"  Test: {len(datasets['test'])}")
-        
-        return datasets
-    
-    def create_dataloaders(self, datasets):
-        dataloaders = {}
-        for split, dataset in datasets.items():
-            dataloaders[split] = torch.utils.data.DataLoader(
-                dataset,
-                batch_size=self.config.BATCH_SIZE,
-                shuffle=(split == 'train'),
-                num_workers=4,
-                pin_memory=True
-            )
-        return dataloaders
 
 class Trainer:
     """训练器类"""
     
-    def __init__(self, config, model, device):
-        self.config = config
+    def __init__(self, model, device):
         self.model = model
         self.device = device
         self.criterion = nn.BCEWithLogitsLoss()
-        self.optimizer = optim.Adam(model.parameters(), lr=config.LEARNING_RATE)
-        self.scaler = torch.cuda.amp.GradScaler() if config.USE_AMP else None
+        self.optimizer = optim.Adam(model.parameters(), lr=1e-4)
         self.history = {'loss': [], 'val_loss': [], 'accuracy': [], 'val_accuracy': []}
     
     def train_one_epoch(self, dataloader):
@@ -177,29 +51,15 @@ class Trainer:
         total_correct = 0
         total_samples = 0
         
-        print(f"开始训练一个epoch，数据加载器长度: {len(dataloader)}")
-        
-        for batch_idx, (inputs, labels) in enumerate(tqdm(dataloader, desc="Training", leave=False)):
-            if batch_idx % 10 == 0:
-                print(f"处理批次 {batch_idx}/{len(dataloader)}, 输入形状: {inputs.shape}, 标签形状: {labels.shape}")
-            
+        for inputs, labels in tqdm(dataloader, desc="Training", leave=False):
             inputs, labels = inputs.to(self.device), labels.to(self.device)
             labels = labels.float().unsqueeze(1)
             
             self.optimizer.zero_grad()
-            
-            if self.config.USE_AMP:
-                with torch.cuda.amp.autocast():
-                    outputs = self.model(inputs)
-                    loss = self.criterion(outputs, labels)
-                self.scaler.scale(loss).backward()
-                self.scaler.step(self.optimizer)
-                self.scaler.update()
-            else:
-                outputs = self.model(inputs)
-                loss = self.criterion(outputs, labels)
-                loss.backward()
-                self.optimizer.step()
+            outputs = self.model(inputs)
+            loss = self.criterion(outputs, labels)
+            loss.backward()
+            self.optimizer.step()
             
             total_loss += loss.item()
             predictions = (torch.sigmoid(outputs) > 0.5).float()
@@ -233,13 +93,13 @@ class Trainer:
         accuracy = total_correct / total_samples
         return avg_loss, accuracy
     
-    def train(self, dataloaders):
-        print(f"\nStarting training for {self.config.EPOCHS} epochs...")
+    def train(self, dataloaders, epochs=30):
+        print(f"\nStarting training for {epochs} epochs...")
         
         best_val_acc = 0.0
         best_model_state = None
         
-        for epoch in range(self.config.EPOCHS):
+        for epoch in range(epochs):
             start_time = time.time()
             
             train_loss, train_acc = self.train_one_epoch(dataloaders['train'])
@@ -253,8 +113,8 @@ class Trainer:
             if val_acc > best_val_acc:
                 best_val_acc = val_acc
                 best_model_state = self.model.state_dict().copy()
-                best_path = os.path.join(self.config.MODEL_SAVE_PATH, f'{self.config.MODEL_NAME}_best.pth')
-                os.makedirs(self.config.MODEL_SAVE_PATH, exist_ok=True)
+                best_path = os.path.join('models', 'lstm_gender_detector_best.pth')
+                os.makedirs('models', exist_ok=True)
                 torch.save({
                     'model_state_dict': best_model_state,
                     'epoch': epoch + 1,
@@ -264,7 +124,7 @@ class Trainer:
                 print(f"  -> 保存最佳模型 (val_acc={best_val_acc:.4f})")
             
             epoch_time = time.time() - start_time
-            print(f"\nEpoch {epoch+1}/{self.config.EPOCHS} - {epoch_time:.1f}s")
+            print(f"\nEpoch {epoch+1}/{epochs} - {epoch_time:.1f}s")
             print(f"  Train: loss={train_loss:.4f}, acc={train_acc:.4f}")
             print(f"  Val:   loss={val_loss:.4f}, acc={val_acc:.4f}")
         
@@ -313,9 +173,9 @@ class Trainer:
     
     def save_model(self, path=None):
         if path is None:
-            path = os.path.join(self.config.MODEL_SAVE_PATH, f'{self.config.MODEL_NAME}.pth')
+            path = os.path.join('models', 'lstm_gender_detector_final.pth')
         
-        os.makedirs(self.config.MODEL_SAVE_PATH, exist_ok=True)
+        os.makedirs('models', exist_ok=True)
         
         torch.save({
             'model_state_dict': self.model.state_dict(),
@@ -325,26 +185,68 @@ class Trainer:
         print(f"Model saved to {path}")
         return path
 
+
 def main():
     print("=" * 60)
-    print("声音性别识别 - 训练模式")
+    print("声音性别识别 - LSTM 模型训练")
     print("=" * 60)
     
     config = Config()
+    features_path = os.path.join(config.FEATURES_PATH, 'features.npy')
+    labels_path = os.path.join(config.FEATURES_PATH, 'labels.npy')
     
-    data_manager = DataManager(config)
-    audio_paths, genders = data_manager.load_dataset()
-    datasets = data_manager.create_datasets(audio_paths, genders)
-    dataloaders = data_manager.create_dataloaders(datasets)
+    if not os.path.exists(features_path) or not os.path.exists(labels_path):
+        print(f"\n错误: 特征文件不存在！")
+        print(f"  特征文件: {features_path}")
+        print(f"  标签文件: {labels_path}")
+        print("请先运行 feature_extractor.py 提取特征！")
+        return
     
-    device = torch.device('cuda' if config.USE_GPU and torch.cuda.is_available() else 'cpu')
+    print(f"\n加载特征文件...")
+    features = np.load(features_path)
+    labels = np.load(labels_path)
+    
+    print(f"  特征维度: {features.shape[1]}")
+    print(f"  样本数量: {features.shape[0]}")
+    print(f"  男性样本: {np.sum(labels == 0)}")
+    print(f"  女性样本: {np.sum(labels == 1)}")
+    
+    X_train, X_temp, y_train, y_temp = train_test_split(
+        features, labels, test_size=0.2, random_state=42, stratify=labels
+    )
+    X_val, X_test, y_val, y_test = train_test_split(
+        X_temp, y_temp, test_size=0.5, random_state=42, stratify=y_temp
+    )
+    
+    datasets = {
+        'train': FeatureDataset(X_train, y_train),
+        'val': FeatureDataset(X_val, y_val),
+        'test': FeatureDataset(X_test, y_test)
+    }
+    
+    print(f"\n数据集划分:")
+    print(f"  Train: {len(datasets['train'])}")
+    print(f"  Val:   {len(datasets['val'])}")
+    print(f"  Test:  {len(datasets['test'])}")
+    
+    dataloaders = {}
+    for split, dataset in datasets.items():
+        dataloaders[split] = torch.utils.data.DataLoader(
+            dataset,
+            batch_size=config.BATCH_SIZE,
+            shuffle=(split == 'train'),
+            num_workers=0
+        )
+    
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f"\nUsing device: {device}")
     
-    model = GenderDetectorModel(config).to(device)
+    input_dim = features.shape[1]
+    model = LSTMGenderDetector(input_dim=input_dim).to(device)
     
-    trainer = Trainer(config, model, device)
+    trainer = Trainer(model, device)
     try:
-        trainer.train(dataloaders)
+        trainer.train(dataloaders, epochs=config.EPOCHS)
         try:
             trainer.evaluate(dataloaders['test'])
         except Exception as e:
@@ -355,17 +257,15 @@ def main():
         import traceback
         traceback.print_exc()
     finally:
-        final_path = os.path.join(config.MODEL_SAVE_PATH, f'{config.MODEL_NAME}_final.pth')
-        trainer.save_model(final_path)
-        print(f"\n最终模型已保存到: {final_path}")
-        
-        best_path = os.path.join(config.MODEL_SAVE_PATH, f'{config.MODEL_NAME}_best.pth')
+        trainer.save_model()
+        best_path = os.path.join('models', 'lstm_gender_detector_best.pth')
         if os.path.exists(best_path):
             print(f"最佳模型已保存到: {best_path}")
     
     print("\n" + "=" * 60)
     print("训练完成！")
     print("=" * 60)
+
 
 if __name__ == "__main__":
     main()
