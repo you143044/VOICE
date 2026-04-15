@@ -192,8 +192,8 @@ def main():
     print("=" * 60)
     
     config = Config()
-    features_path = os.path.join(config.FEATURES_PATH, 'features.npy')
-    labels_path = os.path.join(config.FEATURES_PATH, 'labels.npy')
+    features_path = os.path.join('features', 'features.npy')
+    labels_path = os.path.join('features', 'labels.npy')
     
     if not os.path.exists(features_path) or not os.path.exists(labels_path):
         print(f"\n错误: 特征文件不存在！")
