@@ -259,3 +259,1563 @@ class LSTMGenderDetector(nn.Module):
         # 全连接层
         output = self.fc(out)
         return output
+"""
+model"""
+model.py - 模型和特征提取模块
+================================"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器""""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=1600"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self,"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) >"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.res"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int1"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np.float32) / 3276"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np.float32) / 32768.0
+            elif audio.dtype == np.int32:
+                audio = audio"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np.float32) / 32768.0
+            elif audio.dtype == np.int32:
+                audio = audio.astype(np.float32) / 2147483648."""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np.float32) / 32768.0
+            elif audio.dtype == np.int32:
+                audio = audio.astype(np.float32) / 2147483648.0
+            
+            audio = audio /"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np.float32) / 32768.0
+            elif audio.dtype == np.int32:
+                audio = audio.astype(np.float32) / 2147483648.0
+            
+            audio = audio / (np.max(np.abs(audio)) +"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np.float32) / 32768.0
+            elif audio.dtype == np.int32:
+                audio = audio.astype(np.float32) / 2147483648.0
+            
+            audio = audio / (np.max(np.abs(audio)) + 1e-8)
+            
+            if len(audio) > self.fixed_length"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np.float32) / 32768.0
+            elif audio.dtype == np.int32:
+                audio = audio.astype(np.float32) / 2147483648.0
+            
+            audio = audio / (np.max(np.abs(audio)) + 1e-8)
+            
+            if len(audio) > self.fixed_length:
+                audio = audio[:self.fixed_length]
+            elif len(audio) <"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np.float32) / 32768.0
+            elif audio.dtype == np.int32:
+                audio = audio.astype(np.float32) / 2147483648.0
+            
+            audio = audio / (np.max(np.abs(audio)) + 1e-8)
+            
+            if len(audio) > self.fixed_length:
+                audio = audio[:self.fixed_length]
+            elif len(audio) < self.fixed_length:
+                pad_left = (self.fixed_length - len(audio))"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np.float32) / 32768.0
+            elif audio.dtype == np.int32:
+                audio = audio.astype(np.float32) / 2147483648.0
+            
+            audio = audio / (np.max(np.abs(audio)) + 1e-8)
+            
+            if len(audio) > self.fixed_length:
+                audio = audio[:self.fixed_length]
+            elif len(audio) < self.fixed_length:
+                pad_left = (self.fixed_length - len(audio)) // 2
+                pad_right = self.fixed_length - len(audio) - pad_left"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np.float32) / 32768.0
+            elif audio.dtype == np.int32:
+                audio = audio.astype(np.float32) / 2147483648.0
+            
+            audio = audio / (np.max(np.abs(audio)) + 1e-8)
+            
+            if len(audio) > self.fixed_length:
+                audio = audio[:self.fixed_length]
+            elif len(audio) < self.fixed_length:
+                pad_left = (self.fixed_length - len(audio)) // 2
+                pad_right = self.fixed_length - len(audio) - pad_left
+                audio = np.pad(audio, (pad_left, pad_right), mode='constant"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np.float32) / 32768.0
+            elif audio.dtype == np.int32:
+                audio = audio.astype(np.float32) / 2147483648.0
+            
+            audio = audio / (np.max(np.abs(audio)) + 1e-8)
+            
+            if len(audio) > self.fixed_length:
+                audio = audio[:self.fixed_length]
+            elif len(audio) < self.fixed_length:
+                pad_left = (self.fixed_length - len(audio)) // 2
+                pad_right = self.fixed_length - len(audio) - pad_left
+                audio = np.pad(audio, (pad_left, pad_right), mode='constant')
+            
+            return audio
+        except Exception as e:
+            print(f"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np.float32) / 32768.0
+            elif audio.dtype == np.int32:
+                audio = audio.astype(np.float32) / 2147483648.0
+            
+            audio = audio / (np.max(np.abs(audio)) + 1e-8)
+            
+            if len(audio) > self.fixed_length:
+                audio = audio[:self.fixed_length]
+            elif len(audio) < self.fixed_length:
+                pad_left = (self.fixed_length - len(audio)) // 2
+                pad_right = self.fixed_length - len(audio) - pad_left
+                audio = np.pad(audio, (pad_left, pad_right), mode='constant')
+            
+            return audio
+        except Exception as e:
+            print(f"Error loading {audio_path}: {e}")
+            return None
+    
+"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np.float32) / 32768.0
+            elif audio.dtype == np.int32:
+                audio = audio.astype(np.float32) / 2147483648.0
+            
+            audio = audio / (np.max(np.abs(audio)) + 1e-8)
+            
+            if len(audio) > self.fixed_length:
+                audio = audio[:self.fixed_length]
+            elif len(audio) < self.fixed_length:
+                pad_left = (self.fixed_length - len(audio)) // 2
+                pad_right = self.fixed_length - len(audio) - pad_left
+                audio = np.pad(audio, (pad_left, pad_right), mode='constant')
+            
+            return audio
+        except Exception as e:
+            print(f"Error loading {audio_path}: {e}")
+            return None
+    
+    def extract_features(self, audio):
+        """提取音频特征"""
+        try:
+            features = []
+            
+            # 能量特征
+"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np.float32) / 32768.0
+            elif audio.dtype == np.int32:
+                audio = audio.astype(np.float32) / 2147483648.0
+            
+            audio = audio / (np.max(np.abs(audio)) + 1e-8)
+            
+            if len(audio) > self.fixed_length:
+                audio = audio[:self.fixed_length]
+            elif len(audio) < self.fixed_length:
+                pad_left = (self.fixed_length - len(audio)) // 2
+                pad_right = self.fixed_length - len(audio) - pad_left
+                audio = np.pad(audio, (pad_left, pad_right), mode='constant')
+            
+            return audio
+        except Exception as e:
+            print(f"Error loading {audio_path}: {e}")
+            return None
+    
+    def extract_features(self, audio):
+        """提取音频特征"""
+        try:
+            features = []
+            
+            # 能量特征
+            energy = np.sum(audio ** 2) / len(audio)
+            energy_db"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np.float32) / 32768.0
+            elif audio.dtype == np.int32:
+                audio = audio.astype(np.float32) / 2147483648.0
+            
+            audio = audio / (np.max(np.abs(audio)) + 1e-8)
+            
+            if len(audio) > self.fixed_length:
+                audio = audio[:self.fixed_length]
+            elif len(audio) < self.fixed_length:
+                pad_left = (self.fixed_length - len(audio)) // 2
+                pad_right = self.fixed_length - len(audio) - pad_left
+                audio = np.pad(audio, (pad_left, pad_right), mode='constant')
+            
+            return audio
+        except Exception as e:
+            print(f"Error loading {audio_path}: {e}")
+            return None
+    
+    def extract_features(self, audio):
+        """提取音频特征"""
+        try:
+            features = []
+            
+            # 能量特征
+            energy = np.sum(audio ** 2) / len(audio)
+            energy_db = 10 * np.log10(energy + 1e-10)
+"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np.float32) / 32768.0
+            elif audio.dtype == np.int32:
+                audio = audio.astype(np.float32) / 2147483648.0
+            
+            audio = audio / (np.max(np.abs(audio)) + 1e-8)
+            
+            if len(audio) > self.fixed_length:
+                audio = audio[:self.fixed_length]
+            elif len(audio) < self.fixed_length:
+                pad_left = (self.fixed_length - len(audio)) // 2
+                pad_right = self.fixed_length - len(audio) - pad_left
+                audio = np.pad(audio, (pad_left, pad_right), mode='constant')
+            
+            return audio
+        except Exception as e:
+            print(f"Error loading {audio_path}: {e}")
+            return None
+    
+    def extract_features(self, audio):
+        """提取音频特征"""
+        try:
+            features = []
+            
+            # 能量特征
+            energy = np.sum(audio ** 2) / len(audio)
+            energy_db = 10 * np.log10(energy + 1e-10)
+            features.append(energy_db)
+            
+            # 过零率
+            zero"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np.float32) / 32768.0
+            elif audio.dtype == np.int32:
+                audio = audio.astype(np.float32) / 2147483648.0
+            
+            audio = audio / (np.max(np.abs(audio)) + 1e-8)
+            
+            if len(audio) > self.fixed_length:
+                audio = audio[:self.fixed_length]
+            elif len(audio) < self.fixed_length:
+                pad_left = (self.fixed_length - len(audio)) // 2
+                pad_right = self.fixed_length - len(audio) - pad_left
+                audio = np.pad(audio, (pad_left, pad_right), mode='constant')
+            
+            return audio
+        except Exception as e:
+            print(f"Error loading {audio_path}: {e}")
+            return None
+    
+    def extract_features(self, audio):
+        """提取音频特征"""
+        try:
+            features = []
+            
+            # 能量特征
+            energy = np.sum(audio ** 2) / len(audio)
+            energy_db = 10 * np.log10(energy + 1e-10)
+            features.append(energy_db)
+            
+            # 过零率
+            zero_crossings = np.sum(np.abs(np.diff(np.sign(audio)))) / (2 * len"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np.float32) / 32768.0
+            elif audio.dtype == np.int32:
+                audio = audio.astype(np.float32) / 2147483648.0
+            
+            audio = audio / (np.max(np.abs(audio)) + 1e-8)
+            
+            if len(audio) > self.fixed_length:
+                audio = audio[:self.fixed_length]
+            elif len(audio) < self.fixed_length:
+                pad_left = (self.fixed_length - len(audio)) // 2
+                pad_right = self.fixed_length - len(audio) - pad_left
+                audio = np.pad(audio, (pad_left, pad_right), mode='constant')
+            
+            return audio
+        except Exception as e:
+            print(f"Error loading {audio_path}: {e}")
+            return None
+    
+    def extract_features(self, audio):
+        """提取音频特征"""
+        try:
+            features = []
+            
+            # 能量特征
+            energy = np.sum(audio ** 2) / len(audio)
+            energy_db = 10 * np.log10(energy + 1e-10)
+            features.append(energy_db)
+            
+            # 过零率
+            zero_crossings = np.sum(np.abs(np.diff(np.sign(audio)))) / (2 * len(audio))
+            features.append(zero_crossings)
+            
+            #"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np.float32) / 32768.0
+            elif audio.dtype == np.int32:
+                audio = audio.astype(np.float32) / 2147483648.0
+            
+            audio = audio / (np.max(np.abs(audio)) + 1e-8)
+            
+            if len(audio) > self.fixed_length:
+                audio = audio[:self.fixed_length]
+            elif len(audio) < self.fixed_length:
+                pad_left = (self.fixed_length - len(audio)) // 2
+                pad_right = self.fixed_length - len(audio) - pad_left
+                audio = np.pad(audio, (pad_left, pad_right), mode='constant')
+            
+            return audio
+        except Exception as e:
+            print(f"Error loading {audio_path}: {e}")
+            return None
+    
+    def extract_features(self, audio):
+        """提取音频特征"""
+        try:
+            features = []
+            
+            # 能量特征
+            energy = np.sum(audio ** 2) / len(audio)
+            energy_db = 10 * np.log10(energy + 1e-10)
+            features.append(energy_db)
+            
+            # 过零率
+            zero_crossings = np.sum(np.abs(np.diff(np.sign(audio)))) / (2 * len(audio))
+            features.append(zero_crossings)
+            
+            # 频谱特征（使用简单的FFT）"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np.float32) / 32768.0
+            elif audio.dtype == np.int32:
+                audio = audio.astype(np.float32) / 2147483648.0
+            
+            audio = audio / (np.max(np.abs(audio)) + 1e-8)
+            
+            if len(audio) > self.fixed_length:
+                audio = audio[:self.fixed_length]
+            elif len(audio) < self.fixed_length:
+                pad_left = (self.fixed_length - len(audio)) // 2
+                pad_right = self.fixed_length - len(audio) - pad_left
+                audio = np.pad(audio, (pad_left, pad_right), mode='constant')
+            
+            return audio
+        except Exception as e:
+            print(f"Error loading {audio_path}: {e}")
+            return None
+    
+    def extract_features(self, audio):
+        """提取音频特征"""
+        try:
+            features = []
+            
+            # 能量特征
+            energy = np.sum(audio ** 2) / len(audio)
+            energy_db = 10 * np.log10(energy + 1e-10)
+            features.append(energy_db)
+            
+            # 过零率
+            zero_crossings = np.sum(np.abs(np.diff(np.sign(audio)))) / (2 * len(audio))
+            features.append(zero_crossings)
+            
+            # 频谱特征（使用简单的FFT）
+            fft = np.fft.fft(audio)
+            magnitude = np.abs"""
+model.py - 模型和特征提取模块
+==================================
+
+包含：
+- LSTM模型定义
+- 特征提取功能
+"""
+
+import numpy as np
+import torch
+import torch.nn as nn
+
+from config import Config
+
+
+class FeatureExtractor:
+    """特征提取器"""
+    
+    def __init__(self, sample_rate=16000, fixed_length=48000):
+        self.sample_rate = sample_rate
+        self.fixed_length = fixed_length
+    
+    def load_audio(self, audio_path):
+        """加载并预处理音频"""
+        try:
+            import scipy.io.wavfile as wavfile
+            from scipy import signal
+            
+            sr, audio = wavfile.read(audio_path)
+            
+            if len(audio.shape) > 1:
+                audio = np.mean(audio, axis=1)
+            
+            if sr != self.sample_rate:
+                num_samples = int(len(audio) * self.sample_rate / sr)
+                audio = signal.resample(audio, num_samples)
+            
+            if audio.dtype == np.int16:
+                audio = audio.astype(np.float32) / 32768.0
+            elif audio.dtype == np.int32:
+                audio = audio.astype(np.float32) / 2147483648.0
+            
+            audio = audio / (np.max(np.abs(audio)) + 1e-8)
+            
+            if len(audio) > self.fixed_length:
+                audio = audio[:self.fixed_length]
+            elif len(audio) < self.fixed_length:
+                pad_left = (self.fixed_length - len(audio)) // 2
+                pad_right = self.fixed_length - len(audio) - pad_left
+                audio = np.pad(audio, (pad_left, pad_right), mode='constant')
+            
+            return audio
+        except Exception as e:
+            print(f"Error loading {audio_path}: {e}")
+            return None
+    
+    def extract_features(self, audio):
+        """提取音频特征"""
+        try:
+            features = []
+            
+            # 能量特征
+            energy = np.sum(audio ** 2) / len(audio)
+            energy_db = 10 * np.log10(energy + 1e-10)
+            features.append(energy_db)
+            
+            # 过零率
+            zero_crossings = np.sum(np.abs(np.diff(np.sign(audio)))) / (2 * len(audio))
+            features.append(zero_crossings)
+            
+            # 频谱特征（使用简单的FFT）
+            fft = np.fft.fft(audio)
+            magnitude = np.abs(fft)[:len(fft)//2]
+            features.append(np.mean(magnitude)
