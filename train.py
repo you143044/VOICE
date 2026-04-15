@@ -246,7 +246,7 @@ def main():
     
     trainer = Trainer(model, device)
     try:
-        trainer.train(dataloaders, epochs=config.EPOCHS)
+        trainer.train(dataloaders, epochs=200)
         try:
             trainer.evaluate(dataloaders['test'])
         except Exception as e:
